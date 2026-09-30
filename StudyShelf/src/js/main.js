@@ -1,5 +1,5 @@
-import { testApiModule } from "./api.js";
+import { initializeMobileMenu } from "./ui.js";
 
 console.log("StudyShelf application started.");
 
-testApiModule();
+initializeMobileMenu();
