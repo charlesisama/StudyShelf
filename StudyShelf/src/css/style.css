@@ -23,11 +23,7 @@
   --container-width: 1200px;
 }
 
-
-/* ================================
-   Reset
-   ================================ */
-
+/* Reset */
 * {
   box-sizing: border-box;
   margin: 0;
@@ -71,19 +67,13 @@ a {
   text-decoration: none;
 }
 
-/* ================================
-   Layout
-   ================================ */
-
+/* Layout */
 .container {
   width: min(100% - 2rem, var(--container-width));
   margin-inline: auto;
 }
 
-/* ================================
-   Header
-   ================================ */
-
+ /* Header */
 .site-header {
   position: sticky;
   top: 0;
@@ -150,10 +140,7 @@ a {
   background-color: var(--color-primary);
 }
 
-/* ================================
-   Hero
-   ================================ */
-
+/* Hero */
 .hero {
   padding: 5rem 0;
   background-color: var(--color-primary);
@@ -194,10 +181,7 @@ a {
   font-size: 1.05rem;
 }
 
-/* ================================
-   Buttons
-   ================================ */
-
+/* Buttons */
 .button {
   display: inline-flex;
   align-items: center;
@@ -242,10 +226,7 @@ a {
   background-color: var(--color-accent);
 }
 
-/* ================================
-   Sections
-   ================================ */
-
+/* Sections */
 .search-section,
 .results-section,
 .shelf-section {
@@ -275,10 +256,7 @@ a {
   color: var(--color-muted);
 }
 
-/* ================================
-   Search
-   ================================ */
-
+/* Search */
 .search-form {
   display: grid;
   gap: 1rem;
@@ -337,11 +315,7 @@ a {
   border-radius: var(--radius-md);
   background-color: var(--color-surface);
 }
-
-/* ================================
-   Results
-   ================================ */
-
+/* Results */
 .results-header {
   display: flex;
   flex-direction: column;
@@ -378,10 +352,7 @@ a {
   color: var(--color-muted);
 }
 
-/* ================================
-   Pagination
-   ================================ */
-
+ /* Pagination */
 .pagination {
   display: flex;
   align-items: center;
@@ -395,17 +366,12 @@ a {
   font-weight: 700;
 }
 
-/* ================================
-   Shelf
-   ================================ */
-
+ /* Shelf */
 .shelf-content {
   min-height: 12rem;
 }
 
-/* ================================
-   Footer
-   ================================ */
+/* Footer */
 
 .site-footer {
   background-color: var(--color-primary);
@@ -424,9 +390,7 @@ a {
   font-size: 0.9rem;
 }
 
-/* ================================
-   Tablet
-   ================================ */
+/* Tablet */
 
 @media screen and (min-width: 768px) {
   .container {
@@ -461,9 +425,7 @@ a {
   }
 }
 
-/* ================================
-   Desktop
-   ================================ */
+/* Deskop */
 
 @media screen and (min-width: 1024px) {
   .filter-bar {
@@ -476,9 +438,7 @@ a {
   }
 }
 
-/* ================================
-   Mobile Navigation
-   ================================ */
+/* Mobile Navigation */
 
 @media screen and (max-width: 767px) {
   .main-nav {
@@ -507,4 +467,85 @@ a {
   .menu-toggle {
     display: block;
   }
+}
+
+
+
+/* Book Cards */
+.book-card {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.book-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+}
+
+.book-cover-wrapper {
+  aspect-ratio: 2 / 3;
+  overflow: hidden;
+  background-color: #e2e8f0;
+}
+
+.book-cover {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.book-card-content {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  padding: 1rem;
+}
+
+.book-source {
+  align-self: flex-start;
+  margin-bottom: 0.6rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 999px;
+  background-color: #ecfdf5;
+  color: var(--color-secondary);
+  font-size: 0.7rem;
+  font-weight: 800;
+}
+
+.book-title {
+  margin-bottom: 0.4rem;
+  color: var(--color-primary);
+  font-size: 1.05rem;
+  line-height: 1.3;
+}
+
+.book-author {
+  margin-bottom: 0.5rem;
+  color: var(--color-text);
+  font-size: 0.9rem;
+}
+
+.book-year {
+  margin-bottom: 1rem;
+  color: var(--color-muted);
+  font-size: 0.8rem;
+}
+
+.book-actions {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.5rem;
+  margin-top: auto;
+}
+
+.book-actions .button {
+  width: 100%;
 }
