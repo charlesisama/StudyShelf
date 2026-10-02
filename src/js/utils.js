@@ -11,6 +11,15 @@ function toArray(value) {
     return [];
 }
 
+//Escape HTML special characters in a string to prevent XSS attacks
+export function escapeHtml(value) {
+    return String(value ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+}
 //Normalize an Open Library book.
 export function normalizeOpenLibraryBook(book) {
     return {

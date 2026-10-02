@@ -1,6 +1,6 @@
-import { openBookDetails } from "./book-detail.js";
-
 import { addToShelf } from "./storage.js";
+import { escapeHtml } from "./utils.js";
+import { openBookDetails } from "./book-detail.js";
 
 const bookGrid = document.querySelector("#book-grid");
 
@@ -22,6 +22,12 @@ function createBookCard(book) {
 
   const year = book.publish_year || "Year unknown";
 
+  const safeTitle = escapeHtml(book.title);
+  const safeAuthors = escapeHtml(authors);
+  const safeYear = escapeHtml(year);
+  const safeCover = escapeHtml(cover);
+  const safeBookId = escapeHtml(book.id);
+
   const sourceLabel =
     book.source === "open_library"
       ? "Open Library"
@@ -31,8 +37,8 @@ function createBookCard(book) {
     <div class="book-cover-wrapper">
       <img
         class="book-cover"
-        src="${cover}"
-        alt="Cover of ${book.title}"
+        src="${safeCover}"
+        alt="Cover of ${safeTitle}"
         loading="lazy"
       />
     </div>
@@ -44,15 +50,15 @@ function createBookCard(book) {
       </span>
 
       <h3 class="book-title">
-        ${book.title}
+        ${safeTitle}
       </h3>
 
       <p class="book-author">
-        ${authors}
+        ${safeAuthors}
       </p>
 
       <p class="book-year">
-        First published: ${year}
+        First published: ${safeYear}
       </p>
 
       <div class="book-actions">
@@ -60,7 +66,7 @@ function createBookCard(book) {
         <button
           class="button button-secondary details-button"
           type="button"
-          data-book-id="${book.id}"
+          data-book-id="${safeBookId}"
         >
           Details
         </button>
@@ -68,7 +74,7 @@ function createBookCard(book) {
         <button
           class="button button-primary shelf-button"
           type="button"
-          data-book-id="${book.id}"
+          data-book-id="${safeBookId}"
         >
           Add to Shelf
         </button>
@@ -76,6 +82,12 @@ function createBookCard(book) {
       </div>
     </div>
   `;
+
+  const image = card.querySelector(".book-cover");
+
+  image?.addEventListener("error", () => {
+    image.src = "/src/images/book-placeholder.svg";
+  });
 
   return card;
 }
@@ -109,6 +121,8 @@ export function renderBooks(books) {
 
 export function initializeBookList() {
   bookGrid?.addEventListener("click", (event) => {
+
+    // Details button
     const detailsButton =
       event.target.closest(".details-button");
 
@@ -123,34 +137,38 @@ export function initializeBookList() {
       if (book) {
         openBookDetails(book);
       }
-      const shelfButton =
-        event.target.closest(".shelf-button");
 
-      if (shelfButton) {
-        const bookId =
-          shelfButton.dataset.bookId;
+      return;
+    }
 
-        const book = currentBooks.find(
-          (item) => item.id === bookId
+    // Add to Shelf button
+    const shelfButton =
+      event.target.closest(".shelf-button");
+
+    if (shelfButton) {
+      const bookId =
+        shelfButton.dataset.bookId;
+
+      const book = currentBooks.find(
+        (item) => item.id === bookId
+      );
+
+      if (!book) return;
+
+      const added = addToShelf(book);
+
+      if (added) {
+        shelfButton.textContent =
+          "Added to Shelf";
+
+        shelfButton.disabled = true;
+
+        document.dispatchEvent(
+          new CustomEvent("shelfUpdated")
         );
-
-        if (!book) return;
-
-        const added = addToShelf(book);
-
-        if (added) {
-          shelfButton.textContent =
-            "Added to Shelf";
-
-          shelfButton.disabled = true;
-
-          document.dispatchEvent(
-            new CustomEvent("shelfUpdated")
-          );
-        } else {
-          shelfButton.textContent =
-            "Already on Shelf";
-        }
+      } else {
+        shelfButton.textContent =
+          "Already on Shelf";
       }
     }
   });

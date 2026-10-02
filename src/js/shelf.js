@@ -1,42 +1,53 @@
-import {getShelf,removeFromShelf} from "./storage.js";
+import { getShelf, removeFromShelf } from "./storage.js";
 
-const shelfContent = document.querySelector("#shelf-content");
+const shelfContent =
+  document.querySelector("#shelf-content");
+
+const shelfCount =
+  document.querySelector("#shelf-count");
 
 export function renderShelf() {
-    if (!shelfContent) return;
+  if (!shelfContent) return;
 
-    const shelf = getShelf();
+  const shelf = getShelf();
 
-    if (shelf.length === 0) {
-        shelfContent.innerHTML = `
+  // Update My Shelf count
+  if (shelfCount) {
+    shelfCount.textContent = `(${shelf.length})`;
+  }
+
+  if (shelf.length === 0) {
+    shelfContent.innerHTML = `
       <div class="empty-state">
         <h3>Your shelf is empty</h3>
         <p>
-          Search for books and add the ones you want to keep here.
+          Search for books and add the ones
+          you want to keep here.
         </p>
       </div>
     `;
 
-        return;
-    }
+    return;
+  }
 
-    shelfContent.innerHTML = "";
+  shelfContent.innerHTML = "";
 
-    shelf.forEach((book) => {
-        const card = document.createElement("article");
+  shelf.forEach((book) => {
+    const card =
+      document.createElement("article");
 
-        card.className = "shelf-card";
+    card.className = "shelf-card";
 
-        const cover = book.cover_url
-            ? book.cover_url
-            : "/src/images/book-placeholder.svg";
+    const cover = book.cover_url
+      ? book.cover_url
+      : "/src/images/book-placeholder.svg";
 
-        const authors =
-            book.authors?.length > 0
-                ? book.authors.join(", ")
-                : "Unknown author";
+    const authors =
+      book.authors?.length > 0
+        ? book.authors.join(", ")
+        : "Unknown author";
 
-        card.innerHTML = `
+    card.innerHTML = `
       <img
         class="shelf-cover"
         src="${cover}"
@@ -59,28 +70,41 @@ export function renderShelf() {
       </div>
     `;
 
-        shelfContent.appendChild(card);
+    const image =
+      card.querySelector(".shelf-cover");
+
+    image?.addEventListener("error", () => {
+      image.src =
+        "/src/images/book-placeholder.svg";
     });
+
+    shelfContent.appendChild(card);
+  });
 }
 
 export function initializeShelf() {
-    renderShelf();
+  renderShelf();
 
-    shelfContent?.addEventListener("click", (event) => {
-        const button = event.target.closest(
-            ".remove-shelf-button"
+  shelfContent?.addEventListener(
+    "click",
+    (event) => {
+      const button =
+        event.target.closest(
+          ".remove-shelf-button"
         );
 
-        if (!button) return;
+      if (!button) return;
 
-        const bookId = button.dataset.bookId;
+      const bookId =
+        button.dataset.bookId;
 
-        removeFromShelf(bookId);
+      removeFromShelf(bookId);
 
-        renderShelf();
+      renderShelf();
 
-        document.dispatchEvent(
-            new CustomEvent("shelfUpdated")
-        );
-    });
+      document.dispatchEvent(
+        new CustomEvent("shelfUpdated")
+      );
+    }
+  );
 }

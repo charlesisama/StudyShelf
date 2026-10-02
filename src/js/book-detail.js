@@ -1,110 +1,125 @@
-import {
-    addToShelf,
-    isInShelf,
-} from "./storage.js";
+import { addToShelf, isInShelf } from "./storage.js";
+import { escapeHtml } from "./utils.js";
 
-const modal = document.querySelector(
-    "#book-detail-modal"
-);
-
-const detailContent = document.querySelector(
-    "#book-detail-content"
-);
-
-const closeButton = document.querySelector(
-    "#close-detail-modal"
-);
+const modal = document.querySelector("#book-detail-modal");
+const detailContent = document.querySelector("#book-detail-content");
+const closeButton = document.querySelector("#close-detail-modal");
 
 export function openBookDetails(book) {
-    if (!modal || !detailContent) return;
+  if (!modal || !detailContent) return;
 
-    const authors =
-        book.authors?.length > 0
-            ? book.authors.join(", ")
-            : "Unknown author";
+  const authors =
+    book.authors?.length > 0
+      ? book.authors.join(", ")
+      : "Unknown author";
 
-    const subjects =
-        book.subjects?.length > 0
-            ? book.subjects.slice(0, 8).join(", ")
-            : "Not available";
+  const subjects =
+    book.subjects?.length > 0
+      ? book.subjects.slice(0, 8).join(", ")
+      : "Not available";
 
-    const identifiers =
-        book.identifiers?.isbn?.length > 0
-            ? book.identifiers.isbn.slice(0, 5).join(", ")
-            : "Not available";
+  const identifiers =
+    book.identifiers?.isbn?.length > 0
+      ? book.identifiers.isbn.slice(0, 5).join(", ")
+      : "Not available";
 
-    const cover = book.cover_url
-        ? book.cover_url
-        : "/src/images/book-placeholder.svg";
+  const cover = book.cover_url
+    ? book.cover_url
+    : "/src/images/book-placeholder.svg";
 
-    const saved = isInShelf(book.id);
+  const saved = isInShelf(book.id);
 
-    detailContent.innerHTML = `
+  const sourceLabel =
+    book.source === "open_library"
+      ? "Open Library"
+      : "Google Books";
+
+  // Sanitize API-derived values before inserting them into HTML.
+  const safeTitle = escapeHtml(book.title);
+  const safeAuthors = escapeHtml(authors);
+  const safeSubjects = escapeHtml(subjects);
+  const safeIdentifiers = escapeHtml(identifiers);
+  const safeCover = escapeHtml(cover);
+  const safePublisher = escapeHtml(
+    book.publisher || "Not available"
+  );
+  const safeFormat = escapeHtml(
+    book.format?.join(", ") || "Not available"
+  );
+  const safeDescription = escapeHtml(
+    book.description || ""
+  );
+  const safeSourceLabel = escapeHtml(sourceLabel);
+  const safeExternalLink = escapeHtml(
+    book.external_link || ""
+  );
+
+  detailContent.innerHTML = `
     <div class="detail-layout">
 
       <div class="detail-cover-wrapper">
         <img
           class="detail-cover"
-          src="${cover}"
-          alt="Cover of ${book.title}"
+          src="${safeCover}"
+          alt="Cover of ${safeTitle}"
+          loading="lazy"
         />
       </div>
 
       <div class="detail-information">
 
         <span class="book-source">
-          ${book.source === "open_library"
-            ? "Open Library"
-            : "Google Books"
-        }
+          ${safeSourceLabel}
         </span>
 
-        <h2>${book.title}</h2>
+        <h2 id="book-detail-title">
+          ${safeTitle}
+        </h2>
 
         <p class="detail-authors">
           <strong>Author:</strong>
-          ${authors}
+          ${safeAuthors}
         </p>
 
         <p>
           <strong>First published:</strong>
-          ${book.publish_year || "Not available"}
+          ${escapeHtml(book.publish_year || "Not available")}
         </p>
 
         <p>
           <strong>Publisher:</strong>
-          ${book.publisher || "Not available"}
+          ${safePublisher}
         </p>
 
         <p>
           <strong>Format:</strong>
-          ${book.format?.join(", ") || "Not available"}
+          ${safeFormat}
         </p>
 
         <p>
           <strong>Subjects:</strong>
-          ${subjects}
+          ${safeSubjects}
         </p>
 
         <p>
           <strong>ISBN:</strong>
-          ${identifiers}
+          ${safeIdentifiers}
         </p>
 
-        ${book.description
-            ? `
+        ${safeDescription
+      ? `
               <div class="detail-description">
                 <h3>Description</h3>
-                <p>${book.description}</p>
+                <p>${safeDescription}</p>
               </div>
             `
-            : ""
-        }
+      : ""
+    }
 
         <div class="detail-actions">
 
           ${saved
-            ? `
+      ? `
                 <button
                   class="button button-secondary"
                   type="button"
@@ -113,7 +128,7 @@ export function openBookDetails(book) {
                   Already on My Shelf
                 </button>
               `
-            : `
+      : `
                 <button
                   id="modal-shelf-button"
                   class="button button-primary"
@@ -122,63 +137,73 @@ export function openBookDetails(book) {
                   Add to My Shelf
                 </button>
               `
-        }
+    }
 
           ${book.external_link
-            ? `
+      ? `
                 <a
                   class="button button-secondary"
-                  href="${book.external_link}"
+                  href="${safeExternalLink}"
                   target="_blank"
                   rel="noopener noreferrer"
                 >
                   View Source
                 </a>
               `
-            : ""
-        }
+      : ""
+    }
 
         </div>
+
       </div>
+
     </div>
   `;
 
-    const shelfButton = document.querySelector(
-        "#modal-shelf-button"
-    );
+  // Fallback if the external cover image fails to load.
+  const detailImage =
+    detailContent.querySelector(".detail-cover");
 
-    shelfButton?.addEventListener("click", () => {
-        const added = addToShelf(book);
+  detailImage?.addEventListener("error", () => {
+    detailImage.src =
+      "/src/images/book-placeholder.svg";
+  });
 
-        if (added) {
-            shelfButton.textContent = "Added to My Shelf";
-            shelfButton.disabled = true;
+  const shelfButton =
+    document.querySelector("#modal-shelf-button");
 
-            document.dispatchEvent(
-                new CustomEvent("shelfUpdated")
-            );
-        }
-    });
+  shelfButton?.addEventListener("click", () => {
+    const added = addToShelf(book);
 
-    modal.showModal();
+    if (added) {
+      shelfButton.textContent = "Added to My Shelf";
+      shelfButton.disabled = true;
 
-    closeButton?.focus();
+      document.dispatchEvent(
+        new CustomEvent("shelfUpdated")
+      );
+    }
+  });
+
+  modal.showModal();
+
+  closeButton?.focus();
 }
 
 export function initializeBookDetails() {
-    closeButton?.addEventListener("click", () => {
-        modal.close();
-    });
+  closeButton?.addEventListener("click", () => {
+    modal.close();
+  });
 
-    modal?.addEventListener("click", (event) => {
-        if (event.target === modal) {
-            modal.close();
-        }
-    });
+  modal?.addEventListener("click", (event) => {
+    if (event.target === modal) {
+      modal.close();
+    }
+  });
 
-    modal?.addEventListener("keydown", (event) => {
-        if (event.key === "Escape") {
-            modal.close();
-        }
-    });
+  modal?.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") {
+      modal.close();
+    }
+  });
 }

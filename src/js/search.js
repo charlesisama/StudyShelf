@@ -8,7 +8,6 @@ import {
     normalizeGoogleBook,
 } from "./utils.js";
 
-//Search both book APIs
 export async function searchBooks(query, searchType) {
     const cleanQuery = query.trim();
 
@@ -26,29 +25,41 @@ export async function searchBooks(query, searchType) {
     const openLibraryResult = results[0];
     const googleBooksResult = results[1];
 
-
-    // Process Open Library results.
+    // Open Library results
     if (openLibraryResult.status === "fulfilled") {
-        const openLibraryBooks = openLibraryResult.value.docs || [];
+        const openLibraryBooks =
+            openLibraryResult.value.docs || [];
 
         openLibraryBooks.forEach((book) => {
             books.push(normalizeOpenLibraryBook(book));
         });
+    } else {
+        console.warn(
+            "Open Library search failed:",
+            openLibraryResult.reason
+        );
     }
 
-
-    // Process Google Books results.
+    // Google Books results
     if (googleBooksResult.status === "fulfilled") {
-        const googleBooks = googleBooksResult.value.items || [];
+        const googleBooks =
+            googleBooksResult.value.items || [];
 
         googleBooks.forEach((book) => {
             books.push(normalizeGoogleBook(book));
         });
+    } else {
+        console.warn(
+            "Google Books search failed:",
+            googleBooksResult.reason
+        );
     }
 
-
+    // Only fail when BOTH APIs failed to return results.
     if (books.length === 0) {
-        throw new Error("No books were found.");
+        throw new Error(
+            "Both book search services are currently unavailable."
+        );
     }
 
     return books;
