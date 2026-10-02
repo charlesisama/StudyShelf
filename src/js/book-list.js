@@ -13,7 +13,7 @@ function createBookCard(book) {
 
   const cover = book.cover_url
     ? book.cover_url
-    : "/src/images/book-placeholder.svg";
+    : "/public/images/book-placeholder.svg";
 
   const authors =
     book.authors?.length > 0
@@ -86,7 +86,7 @@ function createBookCard(book) {
   const image = card.querySelector(".book-cover");
 
   image?.addEventListener("error", () => {
-    image.src = "/src/images/book-placeholder.svg";
+    image.src = "/public/images/book-placeholder.svg";
   });
 
   return card;

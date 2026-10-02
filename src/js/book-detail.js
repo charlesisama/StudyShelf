@@ -30,7 +30,7 @@ export function openBookDetails(book) {
 
   const cover = book.cover_url
     ? book.cover_url
-    : "/src/images/book-placeholder.svg";
+    : "/public/images/book-placeholder.svg";
 
   const saved = isInShelf(book.id);
 
@@ -171,7 +171,7 @@ export function openBookDetails(book) {
 
   detailImage?.addEventListener("error", () => {
     detailImage.src =
-      "/src/images/book-placeholder.svg";
+      "/public/images/book-placeholder.svg";
   });
 
   const shelfButton =

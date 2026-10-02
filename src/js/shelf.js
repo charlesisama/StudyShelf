@@ -91,7 +91,7 @@ export function renderShelf() {
 
     const cover = book.cover_url
       ? book.cover_url
-      : "/src/images/book-placeholder.svg";
+      : "/public/images/book-placeholder.svg";
 
     const authors =
       book.authors?.length > 0
@@ -127,7 +127,7 @@ export function renderShelf() {
 
     image?.addEventListener("error", () => {
       image.src =
-        "/src/images/book-placeholder.svg";
+        "/public/images/book-placeholder.svg";
     });
 
     shelfContent.appendChild(card);
