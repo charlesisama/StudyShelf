@@ -5,8 +5,13 @@ const modal = document.querySelector("#book-detail-modal");
 const detailContent = document.querySelector("#book-detail-content");
 const closeButton = document.querySelector("#close-detail-modal");
 
+let previouslyFocusedElement = null;
+
 export function openBookDetails(book) {
   if (!modal || !detailContent) return;
+
+  previouslyFocusedElement =
+    document.activeElement;
 
   const authors =
     book.authors?.length > 0
@@ -191,19 +196,35 @@ export function openBookDetails(book) {
 }
 
 export function initializeBookDetails() {
-  closeButton?.addEventListener("click", () => {
-    modal.close();
-  });
-
-  modal?.addEventListener("click", (event) => {
-    if (event.target === modal) {
+  closeButton?.addEventListener(
+    "click",
+    () => {
       modal.close();
     }
-  });
+  );
 
-  modal?.addEventListener("keydown", (event) => {
-    if (event.key === "Escape") {
-      modal.close();
+  modal?.addEventListener(
+    "click",
+    (event) => {
+      if (event.target === modal) {
+        modal.close();
+      }
     }
-  });
+  );
+
+  modal?.addEventListener(
+    "keydown",
+    (event) => {
+      if (event.key === "Escape") {
+        modal.close();
+      }
+    }
+  );
+
+  modal?.addEventListener(
+    "close",
+    () => {
+      previouslyFocusedElement?.focus();
+    }
+  );
 }

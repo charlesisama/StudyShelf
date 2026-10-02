@@ -1,4 +1,8 @@
-import { getShelf, removeFromShelf } from "./storage.js";
+import {
+  getShelf,
+  removeFromShelf,
+  addToShelf,
+} from "./storage.js";
 
 const shelfContent =
   document.querySelector("#shelf-content");
@@ -6,12 +10,59 @@ const shelfContent =
 const shelfCount =
   document.querySelector("#shelf-count");
 
+const shelfFeedback =
+  document.querySelector("#shelf-feedback");
+
+let removedBook = null;
+let undoTimeout = null;
+
+function showUndoFeedback(book) {
+  if (!shelfFeedback) return;
+
+  shelfFeedback.innerHTML = `
+    <div class="shelf-feedback-content">
+      <span>
+        "${book.title}" was removed from My Shelf.
+      </span>
+
+      <button
+        class="button button-secondary undo-shelf-button"
+        type="button"
+      >
+        Undo
+      </button>
+    </div>
+  `;
+
+  const undoButton =
+    shelfFeedback.querySelector(
+      ".undo-shelf-button"
+    );
+
+  undoButton?.focus();
+
+  undoTimeout = setTimeout(() => {
+    removedBook = null;
+    shelfFeedback.innerHTML = "";
+  }, 6000);
+}
+
+function clearFeedback() {
+  if (undoTimeout) {
+    clearTimeout(undoTimeout);
+    undoTimeout = null;
+  }
+
+  if (shelfFeedback) {
+    shelfFeedback.innerHTML = "";
+  }
+}
+
 export function renderShelf() {
   if (!shelfContent) return;
 
   const shelf = getShelf();
 
-  // Update My Shelf count
   if (shelfCount) {
     shelfCount.textContent = `(${shelf.length})`;
   }
@@ -64,6 +115,7 @@ export function renderShelf() {
           class="button button-danger remove-shelf-button"
           type="button"
           data-book-id="${book.id}"
+          aria-label="Remove ${book.title} from My Shelf"
         >
           Remove
         </button>
@@ -85,26 +137,79 @@ export function renderShelf() {
 export function initializeShelf() {
   renderShelf();
 
+  // Handle Remove buttons
   shelfContent?.addEventListener(
     "click",
     (event) => {
-      const button =
+      const removeButton =
         event.target.closest(
           ".remove-shelf-button"
         );
 
-      if (!button) return;
+      if (!removeButton) return;
 
       const bookId =
-        button.dataset.bookId;
+        removeButton.dataset.bookId;
+
+      const shelf = getShelf();
+
+      const book = shelf.find(
+        (item) => item.id === bookId
+      );
+
+      if (!book) return;
+
+      const confirmed = window.confirm(
+        `Remove "${book.title}" from My Shelf?`
+      );
+
+      if (!confirmed) {
+        return;
+      }
+
+      removedBook = book;
 
       removeFromShelf(bookId);
 
       renderShelf();
 
+      showUndoFeedback(book);
+
       document.dispatchEvent(
         new CustomEvent("shelfUpdated")
       );
+    }
+  );
+
+  // Handle Undo button
+  shelfFeedback?.addEventListener(
+    "click",
+    (event) => {
+      const undoButton =
+        event.target.closest(
+          ".undo-shelf-button"
+        );
+
+      if (!undoButton || !removedBook) {
+        return;
+      }
+
+      const bookToRestore = removedBook;
+
+      const restored =
+        addToShelf(bookToRestore);
+
+      if (restored) {
+        removedBook = null;
+
+        clearFeedback();
+
+        renderShelf();
+
+        document.dispatchEvent(
+          new CustomEvent("shelfUpdated")
+        );
+      }
     }
   );
 }

@@ -73,7 +73,7 @@ a {
   margin-inline: auto;
 }
 
- /* Header */
+/* Header */
 .site-header {
   position: sticky;
   top: 0;
@@ -315,6 +315,7 @@ a {
   border-radius: var(--radius-md);
   background-color: var(--color-surface);
 }
+
 /* Results */
 .results-header {
   display: flex;
@@ -352,7 +353,7 @@ a {
   color: var(--color-muted);
 }
 
- /* Pagination */
+/* Pagination */
 .pagination {
   display: flex;
   align-items: center;
@@ -366,9 +367,43 @@ a {
   font-weight: 700;
 }
 
- /* Shelf */
+/* Shelf */
 .shelf-content {
   min-height: 12rem;
+}
+
+.shelf-feedback {
+  margin-top: 1rem;
+}
+
+.shelf-feedback-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background-color: var(--color-background);
+}
+
+.shelf-feedback-content span {
+  color: var(--color-text);
+}
+
+.undo-shelf-button {
+  flex-shrink: 0;
+}
+
+@media (max-width: 767px) {
+  .shelf-feedback-content {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .undo-shelf-button {
+    width: 100%;
+  }
 }
 
 /* Footer */
@@ -848,4 +883,111 @@ a {
     flex: 1;
   }
 
+}
+
+
+/* =========================================
+   STEP 7.8 - ANIMATIONS & TRANSITIONS
+   ========================================= */
+
+/* Smooth interactive transitions */
+button,
+a,
+.book-card,
+.shelf-card,
+.modal-close {
+  transition:
+    transform 180ms ease,
+    box-shadow 180ms ease,
+    background-color 180ms ease,
+    color 180ms ease,
+    border-color 180ms ease;
+}
+
+/* Book card hover effect */
+.book-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+}
+
+/* Shelf card hover effect */
+.shelf-card:hover {
+  box-shadow: var(--shadow-sm);
+}
+
+/* Book cover image transition */
+.book-cover,
+.shelf-cover,
+.detail-cover {
+  transition:
+    transform 250ms ease,
+    opacity 250ms ease;
+}
+
+.book-card:hover .book-cover {
+  transform: scale(1.02);
+}
+
+/* Button interaction */
+.button:hover {
+  transform: translateY(-1px);
+}
+
+.button:active {
+  transform: translateY(0);
+}
+
+/* Keyboard focus */
+.button:focus-visible,
+.modal-close:focus-visible,
+input:focus-visible,
+select:focus-visible {
+  outline: 3px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+/* Shelf feedback */
+.shelf-feedback-content {
+  animation: feedback-enter 220ms ease-out;
+}
+
+@keyframes feedback-enter {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Loading spinner */
+.loading-spinner {
+  animation: spinner-rotate 900ms linear infinite;
+}
+
+@keyframes spinner-rotate {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Reduced-motion accessibility */
+@media (prefers-reduced-motion: reduce) {
+
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .book-card:hover,
+  .button:hover {
+    transform: none;
+  }
 }

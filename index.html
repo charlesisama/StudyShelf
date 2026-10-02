@@ -10,7 +10,7 @@
   <title>StudyShelf | Book & Study Discovery</title>
 
   <link rel="stylesheet" href="/src/css/style.css" />
-    <script type="module" src="/src/js/main.js"></script>
+  <script type="module" src="/src/js/main.js"></script>
 </head>
 
 <body>
@@ -94,49 +94,49 @@
         </form>
 
         <div class="filter-bar">
-        
+
           <div class="filter-group">
             <label for="subject-filter">Subject</label>
-        
+
             <select id="subject-filter">
               <option value="all">All subjects</option>
             </select>
           </div>
-        
+
           <div class="filter-group">
             <label for="language-filter">Language</label>
-        
+
             <select id="language-filter">
               <option value="all">All languages</option>
             </select>
           </div>
-        
+
           <div class="filter-group">
             <label for="year-from">From year</label>
-        
+
             <input id="year-from" type="number" min="0" placeholder="e.g. 2000" />
           </div>
-        
+
           <div class="filter-group">
             <label for="year-to">To year</label>
-        
+
             <input id="year-to" type="number" min="0" placeholder="e.g. 2026" />
           </div>
-        
+
           <div class="filter-group">
             <label for="sort-filter">Sort</label>
-        
+
             <select id="sort-filter">
               <option value="relevance">Relevance</option>
               <option value="year-desc">Newest first</option>
               <option value="year-asc">Oldest first</option>
             </select>
           </div>
-        
+
           <button id="reset-filters" class="button button-secondary" type="button">
             Reset
           </button>
-        
+
         </div>
       </div>
     </section>
@@ -165,11 +165,11 @@
           <button id="previous-page" class="button button-secondary" type="button">
             Previous
           </button>
-        
+
           <span id="page-indicator" aria-live="polite">
             Page 1
           </span>
-        
+
           <button id="next-page" class="button button-secondary" type="button">
             Next
           </button>
@@ -188,6 +188,7 @@
           <p>
             Books you save for later will appear here.
           </p>
+          <div id="shelf-feedback" class="shelf-feedback" role="status" aria-live="polite"></div>
         </div>
 
         <div class="shelf-content" id="shelf-content">
@@ -213,9 +214,9 @@
   <dialog id="book-detail-modal" class="book-detail-modal" aria-labelledby="book-detail-title">
     <div class="modal-content">
       <button id="close-detail-modal" class="modal-close" type="button" aria-label="Close book details">
-        &times;
+        ×
       </button>
-  
+
       <div id="book-detail-content"></div>
     </div>
   </dialog>
