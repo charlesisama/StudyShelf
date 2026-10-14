@@ -55,7 +55,7 @@ export async function searchBooks(query, searchType) {
         );
     }
 
-    // Only fail when BOTH APIs failed to return results.
+
     if (books.length === 0) {
         throw new Error(
             "Both book search services are currently unavailable."
